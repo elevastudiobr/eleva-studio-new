@@ -92,10 +92,7 @@ function ProjectCard({
               <span>{project.name}</span>
             </div>
 
-            <span
-              className="project-card__external"
-              aria-hidden="true"
-            >
+            <span className="project-card__external" aria-hidden="true">
               ↗
             </span>
           </div>
@@ -114,16 +111,16 @@ function ProjectCard({
 
       <div className="flex items-start justify-between gap-2 px-1 pt-3">
         <div className="min-w-0">
-          <h3 className="truncate text-sm font-medium tracking-tight text-[var(--project-text)] sm:text-base">
+          <h3 className="truncate text-sm font-medium tracking-tight sm:text-base">
             {project.name}
           </h3>
 
-          <p className="mt-1 text-[11px] text-[var(--project-muted)] sm:text-xs">
+          <p className="mt-1 text-[11px] sm:text-xs">
             {project.category}
           </p>
         </div>
 
-        <span className="shrink-0 pt-0.5 text-[10px] tracking-[0.15em] text-[var(--project-muted)]">
+        <span className="shrink-0 pt-0.5 text-[10px] tracking-[0.15em]">
           {project.number}
         </span>
       </div>
@@ -131,9 +128,7 @@ function ProjectCard({
   );
 }
 
-export default function Projects({
-  transitionProgress,
-}: ProjectsProps) {
+export default function Projects({ transitionProgress }: ProjectsProps) {
   const shouldReduceMotion = useReducedMotion();
   const transitionComplete = transitionProgress >= 0.999;
 
@@ -145,33 +140,53 @@ export default function Projects({
         opacity: transitionComplete ? 1 : 0,
         visibility: transitionComplete ? "visible" : "hidden",
         pointerEvents: transitionComplete ? "auto" : "none",
+        backgroundColor: "var(--site-background, #050505)",
         transition: shouldReduceMotion
           ? "none"
-          : "opacity 900ms cubic-bezier(0.16, 1, 0.3, 1)",
+          : [
+              "opacity 900ms cubic-bezier(0.16, 1, 0.3, 1)",
+              "background-color 1800ms cubic-bezier(0.22, 1, 0.36, 1)",
+            ].join(", "),
       }}
-      className="relative z-30 -mt-[100svh] overflow-hidden bg-transparent px-5 py-24 text-[var(--project-text)] sm:px-8 sm:py-32 lg:px-14 lg:py-36"
+      className="relative z-30 -mt-[100svh] overflow-hidden px-5 py-24 sm:px-8 sm:py-32 lg:px-14 lg:py-36"
     >
       <style jsx global>{`
         #projects {
+          position: relative;
           isolation: isolate;
+          background-color: var(--site-background, #050505);
           --project-text: #ffffff;
           --project-muted: rgba(255, 255, 255, 0.45);
-
-          /* O fundo vem do html: não existe uma segunda camada. */
-          background: transparent;
-        }
-
-        #projects h2,
-        #projects h3,
-        #projects p,
-        #projects .project-card > div > span {
-          transition: color 850ms
-            cubic-bezier(0.22, 1, 0.36, 1);
+          transition:
+            background-color 1800ms cubic-bezier(0.22, 1, 0.36, 1),
+            color 850ms cubic-bezier(0.22, 1, 0.36, 1);
         }
 
         html[data-light-section="true"] #projects {
           --project-text: #050505;
-          --project-muted: rgba(0, 0, 0, 0.55);
+          --project-muted: rgba(0, 0, 0, 0.5);
+        }
+
+        html:not([data-light-section="true"]) #projects {
+          --project-text: #ffffff;
+          --project-muted: rgba(255, 255, 255, 0.45);
+        }
+
+        #projects h2,
+        #projects h3 {
+          color: var(--project-text);
+          transition: color 850ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        #projects p,
+        #projects .project-card > div > span {
+          color: var(--project-muted);
+          transition: color 850ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        #projects .project-ambient {
+          opacity: 1;
+          transition: opacity 850ms cubic-bezier(0.22, 1, 0.36, 1);
         }
 
         html[data-light-section="true"] #projects .project-ambient {
@@ -203,9 +218,7 @@ export default function Projects({
         }
 
         .project-card {
-          flex: 0 0 calc(
-            (100vw - 40px - 2 * var(--project-gap)) / 3
-          );
+          flex: 0 0 calc((100vw - 40px - 2 * var(--project-gap)) / 3);
           min-width: 0;
         }
 
@@ -345,9 +358,7 @@ export default function Projects({
           }
 
           .project-card {
-            flex-basis: calc(
-              (100vw - 64px - 2 * var(--project-gap)) / 3
-            );
+            flex-basis: calc((100vw - 64px - 2 * var(--project-gap)) / 3);
           }
 
           .project-card__screen,
@@ -408,6 +419,7 @@ export default function Projects({
             transform: none;
           }
 
+          #projects,
           #projects h2,
           #projects h3,
           #projects p,
@@ -419,14 +431,12 @@ export default function Projects({
 
       <div
         aria-hidden="true"
-        className="project-ambient pointer-events-none absolute left-1/2 top-28 -z-10 h-64 w-[min(75vw,700px)] -translate-x-1/2 rounded-full bg-[#5b55ff]/[0.035] blur-[120px] transition-opacity duration-700"
+        className="project-ambient pointer-events-none absolute left-1/2 top-28 -z-10 h-64 w-[min(75vw,700px)] -translate-x-1/2 rounded-full bg-[#5b55ff]/[0.035] blur-[120px]"
       />
 
       <div className="relative mx-auto max-w-[1440px]">
         <motion.header
-          initial={
-            shouldReduceMotion ? false : { opacity: 0, y: 24 }
-          }
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{
@@ -435,22 +445,21 @@ export default function Projects({
           }}
           className="mb-14 text-center sm:mb-20"
         >
-          <p className="mb-5 text-[10px] font-medium uppercase tracking-[0.35em] text-[var(--project-muted)] sm:text-xs">
+          <p className="mb-5 text-[10px] font-medium uppercase tracking-[0.35em] sm:text-xs">
             ELEVA STUDIO — TRABALHOS SELECIONADOS
           </p>
 
           <h2
-            className="text-[clamp(3.5rem,9vw,8rem)] leading-[0.82] tracking-[-0.065em] text-[var(--project-text)]"
+            className="text-[clamp(3.5rem,9vw,8rem)] leading-[0.82] tracking-[-0.065em]"
             style={{
-              fontFamily:
-                '"Standard Black", "Arial Black", Impact, sans-serif',
+              fontFamily: '"Standard Black", "Arial Black", Impact, sans-serif',
               fontWeight: 900,
             }}
           >
             PORTFÓLIO<span className="text-[#7770ff]">.</span>
           </h2>
 
-          <p className="mx-auto mt-7 max-w-lg text-sm leading-6 text-[var(--project-muted)] sm:text-base sm:leading-7">
+          <p className="mx-auto mt-7 max-w-lg text-sm leading-6 sm:text-base sm:leading-7">
             Diferentes negócios. Experiências digitais pensadas para
             apresentar cada marca da maneira que ela merece.
           </p>

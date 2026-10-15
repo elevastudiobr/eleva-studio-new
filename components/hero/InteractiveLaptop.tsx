@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Suspense, useMemo, useRef } from "react";
@@ -13,8 +14,36 @@ function LaptopModel({ progressRef }: LaptopModelProps) {
   const { scene } = useGLTF("/models/desktop.glb");
   const screenTexture = useTexture("/images/hero/portifolio.webp");
   const groupRef = useRef<THREE.Group>(null);
+  const screenMaterialRef = useRef<THREE.MeshBasicMaterial>(null);
 
-  const model = useMemo(() => scene.clone(true), [scene]);
+  const { model, fadeMaterials } = useMemo(() => {
+    const clonedModel = scene.clone(true);
+    const materials: THREE.Material[] = [];
+
+    // Cria materiais independentes para controlar o fade
+    // sem alterar o modelo original armazenado pelo Three.js.
+    clonedModel.traverse((object) => {
+      if (!(object instanceof THREE.Mesh)) return;
+
+      const cloneMaterial = (material: THREE.Material) => {
+        const clonedMaterial = material.clone();
+        clonedMaterial.transparent = true;
+        materials.push(clonedMaterial);
+        return clonedMaterial;
+      };
+
+      if (Array.isArray(object.material)) {
+        object.material = object.material.map(cloneMaterial);
+      } else {
+        object.material = cloneMaterial(object.material);
+      }
+    });
+
+    return {
+      model: clonedModel,
+      fadeMaterials: materials,
+    };
+  }, [scene]);
 
   const { center, size } = useMemo(() => {
     const box = new THREE.Box3().setFromObject(model);
@@ -49,7 +78,27 @@ function LaptopModel({ progressRef }: LaptopModelProps) {
 
     const elapsed = state.clock.elapsedTime;
 
-    // Aumenta o desktop durante o scroll
+    // O laptop desaparece junto com a revelação do portfólio.
+    // 0.88 corresponde ao início da revelação da seção Projects.
+    const fadeProgress = THREE.MathUtils.smoothstep(
+      progress,
+      0.88,
+      1
+    );
+
+    const opacity = 1 - fadeProgress;
+
+    fadeMaterials.forEach((material) => {
+      material.opacity = opacity;
+      material.depthWrite = opacity > 0.98;
+    });
+
+    if (screenMaterialRef.current) {
+      screenMaterialRef.current.opacity = opacity;
+      screenMaterialRef.current.depthWrite = opacity > 0.98;
+    }
+
+    // Mantém o movimento e a escala originais.
     const targetScale = baseScale * (1 + progress * 4.5);
 
     group.scale.setScalar(
@@ -59,13 +108,13 @@ function LaptopModel({ progressRef }: LaptopModelProps) {
     // Posição horizontal
     group.position.x = -center.x * baseScale + progress * 0;
 
-    // Posição vertical: abaixa o desktop no frame final
+    // Posição vertical
     group.position.y =
       -center.y * baseScale +
       Math.sin(elapsed * 0.65) * 0.045 +
       progress * -2.8;
 
-    // Profundidade: aproxima o desktop da câmera
+    // Profundidade: aproxima o laptop da câmera
     group.position.z =
       -center.z * baseScale + progress * 2.8;
 
@@ -125,7 +174,10 @@ function LaptopModel({ progressRef }: LaptopModelProps) {
         <planeGeometry args={[screenWidth, screenHeight]} />
 
         <meshBasicMaterial
+          ref={screenMaterialRef}
           map={texture}
+          transparent
+          opacity={1}
           side={THREE.DoubleSide}
           toneMapped={false}
           polygonOffset

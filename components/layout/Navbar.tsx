@@ -114,7 +114,7 @@ export default function Navbar() {
             <img
               src={
                 lightBackground
-                  ? "/images/logo-eleva.webp"
+                  ? "/images/logo-eleva-black.webp"
                   : "/images/logo-eleva-white.webp"
               }
               alt="Eleva Studio"

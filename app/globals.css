@@ -10,7 +10,7 @@
   --font-display: Arial, Helvetica, sans-serif;
 
   --site-background: #050505;
-  --site-background-transition: background-color 850ms
+  --site-background-transition: background-color 1800ms
     cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -47,9 +47,40 @@ select {
   background: rgba(91, 85, 255, 0.5);
 }
 
+.perspective-stage {
+  perspective: 1400px;
+  perspective-origin: 50% 50%;
+  transform-style: preserve-3d;
+}
+
+.perspective-plane {
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+}
+
+/* As seções compartilham o fundo global. */
+#projects,
+#visao,
+#manifesto,
+#equipe,
+#servicos {
+  background-color: transparent;
+  background-image: none;
+}
+
+/* O Manifesto não adiciona um fundo próprio. */
+#manifesto > [aria-hidden="true"] {
+  display: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
     transition: none;
+  }
+
+  .perspective-plane {
+    will-change: auto;
   }
 }
