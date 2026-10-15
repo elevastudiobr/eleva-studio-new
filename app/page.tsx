@@ -12,6 +12,7 @@ import BeyondDesign from "@/components/sections/BeyondDesign";
 import Manifesto from "@/components/sections/Manifesto";
 import ServicesProcess from "@/components/sections/ServicesProcess";
 import Team from "@/components/sections/Team";
+import FAQ from "@/components/sections/FAQ";
 
 export default function Home() {
   const [transitionProgress, setTransitionProgress] = useState(0);
@@ -35,6 +36,8 @@ export default function Home() {
         <ServicesProcess />
 
         <Team />
+
+        <FAQ />
       </main>
 
       <Footer />

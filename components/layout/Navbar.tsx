@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -29,7 +30,30 @@ export default function Navbar() {
       cancelAnimationFrame(frameId);
 
       frameId = requestAnimationFrame(() => {
+        const scrollPosition = window.scrollY;
+        const referenceY = window.innerHeight * 0.35;
+
+        const hero = document.getElementById("inicio");
+        const projects = document.getElementById("projects");
+
+        const heroRect = hero?.getBoundingClientRect();
+        const projectsRect = projects?.getBoundingClientRect();
+
+        const isInHero =
+          !!heroRect &&
+          heroRect.top <= referenceY &&
+          heroRect.bottom > referenceY;
+
+        const isInProjects =
+          !!projectsRect &&
+          projectsRect.top <= referenceY &&
+          projectsRect.bottom > referenceY;
+
+        // Hero e Portfólio sempre usam navbar branca.
+        const forceWhite = isInHero || isInProjects;
+
         const isLight =
+          !forceWhite &&
           document.documentElement.dataset.lightSection === "true";
 
         setLightBackground((current) =>
@@ -45,7 +69,7 @@ export default function Navbar() {
 
           if (section) {
             const rect = section.getBoundingClientRect();
-            const sectionTop = window.scrollY + rect.top;
+            const sectionTop = scrollPosition + rect.top;
 
             const scrollDistance = Math.max(
               section.offsetHeight - window.innerHeight,
@@ -56,7 +80,7 @@ export default function Navbar() {
               1,
               Math.max(
                 0,
-                (window.scrollY - sectionTop) / scrollDistance
+                (scrollPosition - sectionTop) / scrollDistance
               )
             );
           }
@@ -95,7 +119,9 @@ export default function Navbar() {
   const mutedColor = lightBackground ? "text-black/70" : "text-white/70";
   const lineColor = lightBackground ? "bg-black/25" : "bg-white/25";
   const progressColor = lightBackground ? "bg-black" : "bg-white";
-  const borderColor = lightBackground ? "border-black/20" : "border-white/20";
+  const borderColor = lightBackground
+    ? "border-black/20"
+    : "border-white/20";
 
   return (
     <header className="fixed inset-x-0 top-0 z-[100] bg-transparent">

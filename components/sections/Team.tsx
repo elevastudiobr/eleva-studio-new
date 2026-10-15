@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useRef } from "react";
@@ -100,20 +101,6 @@ export default function Team() {
           className="mb-12 grid grid-cols-1 gap-6 lg:mb-16 lg:grid-cols-[1fr_0.55fr] lg:items-end lg:gap-12"
         >
           <div>
-            <motion.p
-              initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.4 }}
-              transition={{
-                duration: shouldReduceMotion ? 0 : 0.65,
-                ease: [0.16, 1, 0.3, 1],
-              }}
-              className="mb-5 text-xs font-semibold uppercase tracking-[0.24em]"
-              style={{ color: COLORS.accent }}
-            >
-              A dimensão humana
-            </motion.p>
-
             <motion.h2
               initial={shouldReduceMotion ? false : { opacity: 0, y: 22 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -203,27 +190,15 @@ export default function Team() {
 
               <div className="absolute left-4 top-4 sm:left-5 sm:top-5">
                 <span
-                  className="inline-flex items-center border px-3 py-2 text-[10px] font-medium uppercase tracking-[0.15em]"
+                  className="inline-block text-[10px] font-semibold uppercase tracking-[0.18em]"
                   style={{
-                    color: COLORS.text,
-                    borderColor: COLORS.line,
-                    background: "rgba(255,255,255,0.78)",
-                    backdropFilter: "blur(12px)",
+                    color: "#FFFFFF",
+                    textShadow: "0 1px 10px rgba(0,0,0,0.55)",
                   }}
                 >
                   Fundador
                 </span>
               </div>
-
-              <span
-                className="absolute bottom-4 right-4 text-xs tracking-[0.12em] sm:bottom-5 sm:right-5"
-                style={{
-                  color: "#FFFFFF",
-                  textShadow: "0 1px 8px rgba(0,0,0,0.4)",
-                }}
-              >
-                01 / 02
-              </span>
             </div>
 
             <div
@@ -307,24 +282,15 @@ export default function Team() {
 
               <div className="absolute left-4 top-4 sm:left-5 sm:top-5">
                 <span
-                  className="inline-flex items-center border px-3 py-2 text-[10px] font-medium uppercase tracking-[0.15em]"
+                  className="inline-block text-[10px] font-semibold uppercase tracking-[0.18em]"
                   style={{
                     color: COLORS.text,
-                    borderColor: COLORS.line,
-                    background: "rgba(255,255,255,0.62)",
-                    backdropFilter: "blur(12px)",
+                    textShadow: "0 1px 8px rgba(255,255,255,0.45)",
                   }}
                 >
                   Colaboração em desenvolvimento
                 </span>
               </div>
-
-              <span
-                className="absolute bottom-4 right-4 text-xs tracking-[0.12em] sm:bottom-5 sm:right-5"
-                style={{ color: "rgba(16,24,43,0.62)" }}
-              >
-                02 / 02
-              </span>
             </div>
 
             <div

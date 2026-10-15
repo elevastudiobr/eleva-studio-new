@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -55,6 +56,15 @@ type BackgroundSection = {
   name: string;
 };
 
+const COLORS = {
+  black: "#050505",
+  beyond: "#FFFFFF",
+  manifesto: "#EEE7F7",
+  services: "#DCEBFF",
+  team: "rgb(194, 222, 255)",
+  faq: "#e7faf9",
+};
+
 export default function BeyondDesign({
   onTransitionProgressChange,
 }: BeyondDesignProps) {
@@ -107,22 +117,6 @@ export default function BeyondDesign({
 
   useEffect(() => {
     const root = document.documentElement;
-
-    // Paleta global das seções.
-    const COLORS = {
-      black: "#050505",
-      beyond: "#FFFFFF",
-
-      // Lavanda mais presente para o Manifesto.
-      manifesto: "#eee7f7",
-
-      // Azul mais forte para Services & Process.
-      services: "#C9DFFF",
-
-      // Cinza azulado para a seção Team.
-      team: "#bfddff",
-    };
-
     let frame = 0;
 
     const getSections = (): BackgroundSection[] => {
@@ -132,13 +126,19 @@ export default function BeyondDesign({
       const beyond = document.getElementById("visao");
       const manifesto = document.getElementById("manifesto");
 
-      const services = document.querySelector<HTMLElement>(
-        "[data-services-process-section]"
-      );
+      const services =
+        document.querySelector<HTMLElement>(
+          "[data-services-process-section]"
+        ) ?? document.getElementById("servicos");
 
-      const team = document.querySelector<HTMLElement>(
-        "[data-team-section]"
-      );
+      const team =
+        document.querySelector<HTMLElement>("[data-team-section]") ??
+        document.getElementById("equipe");
+
+      // Detecta o FAQ por atributo ou por ID.
+      const faq =
+        document.querySelector<HTMLElement>("[data-faq-section]") ??
+        document.getElementById("faq");
 
       if (projects) {
         sections.push({
@@ -180,6 +180,14 @@ export default function BeyondDesign({
         });
       }
 
+      if (faq) {
+        sections.push({
+          element: faq,
+          color: COLORS.faq,
+          name: "faq",
+        });
+      }
+
       return sections;
     };
 
@@ -203,14 +211,31 @@ export default function BeyondDesign({
           };
         });
 
-        // Prioriza a seção que ocupa o centro da tela.
         const activeSections = measuredSections
           .filter((section) => section.containsMiddle)
-          .sort(
-            (a, b) =>
+          .sort((a, b) => {
+            // Serviços prevalece sobre a Equipe em caso de sobreposição.
+            if (
+              a.name === "services" &&
+              b.name === "team"
+            ) {
+              return -1;
+            }
+
+            if (
+              a.name === "team" &&
+              b.name === "services"
+            ) {
+              return 1;
+            }
+
+            // Em outras sobreposições, o FAQ prevalece quando
+            // seu centro está mais próximo do centro da tela.
+            return (
               Math.abs(a.center - middle) -
               Math.abs(b.center - middle)
-          );
+            );
+          });
 
         let activeName = "none";
         let background = COLORS.black;
@@ -219,8 +244,6 @@ export default function BeyondDesign({
           activeName = activeSections[0].name;
           background = activeSections[0].color;
         } else {
-          // Evita uma mudança brusca ao preto em pequenos
-          // espaços entre seções.
           const nearestSections = measuredSections
             .map((section) => {
               const distance =
@@ -239,7 +262,7 @@ export default function BeyondDesign({
 
           const nearest = nearestSections[0];
 
-          if (nearest && nearest.distance <= 80) {
+          if (nearest && nearest.distance <= 100) {
             activeName = nearest.name;
             background = nearest.color;
           }
@@ -251,7 +274,8 @@ export default function BeyondDesign({
           activeName === "beyond" ||
             activeName === "manifesto" ||
             activeName === "services" ||
-            activeName === "team"
+            activeName === "team" ||
+            activeName === "faq"
         );
 
         root.dataset.manifestoSection = String(
@@ -265,6 +289,8 @@ export default function BeyondDesign({
         root.dataset.teamSection = String(
           activeName === "team"
         );
+
+        root.dataset.faqSection = String(activeName === "faq");
       });
     };
 
@@ -280,7 +306,6 @@ export default function BeyondDesign({
     window.addEventListener("scroll", updateBackground, {
       passive: true,
     });
-
     window.addEventListener("resize", updateBackground);
     window.addEventListener("pageshow", updateBackground);
     window.addEventListener("load", updateBackground);
