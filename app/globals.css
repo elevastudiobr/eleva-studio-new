@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -10,7 +11,7 @@
   --font-display: Arial, Helvetica, sans-serif;
 
   --site-background: #050505;
-  --site-background-transition: background-color 1800ms
+  --site-background-transition: background-color 1400ms
     cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -47,6 +48,7 @@ select {
   background: rgba(91, 85, 255, 0.5);
 }
 
+/* Configuração das cenas com perspectiva. */
 .perspective-stage {
   perspective: 1400px;
   perspective-origin: 50% 50%;
@@ -59,12 +61,13 @@ select {
   will-change: transform, opacity;
 }
 
-/* As seções compartilham o fundo global. */
+/* Todas as seções compartilham o fundo global. */
 #projects,
 #visao,
 #manifesto,
 #equipe,
-#servicos {
+#servicos,
+#faq {
   background-color: transparent;
   background-image: none;
 }

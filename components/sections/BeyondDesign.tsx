@@ -62,7 +62,7 @@ const COLORS = {
   manifesto: "#EEE7F7",
   services: "#DCEBFF",
   team: "rgb(194, 222, 255)",
-  faq: "#e7faf9",
+  faq: "#e7e8fa",
 };
 
 export default function BeyondDesign({

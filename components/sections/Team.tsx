@@ -55,30 +55,23 @@ export default function Team() {
       }}
     >
       {/* FUNDO AZUL-CLARO */}
-
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
       >
         <div
           className="absolute -right-40 top-20 h-[440px] w-[440px] rounded-full blur-[110px]"
-          style={{
-            background: "rgba(126, 160, 193, 0.22)",
-          }}
+          style={{ background: "rgba(126, 160, 193, 0.22)" }}
         />
 
         <div
           className="absolute -bottom-24 -left-32 h-[360px] w-[360px] rounded-full blur-[100px]"
-          style={{
-            background: "rgba(177, 199, 219, 0.28)",
-          }}
+          style={{ background: "rgba(177, 199, 219, 0.28)" }}
         />
 
         <div
           className="absolute left-[35%] top-[40%] h-[280px] w-[420px] rounded-full blur-[120px]"
-          style={{
-            background: "rgba(218, 230, 241, 0.30)",
-          }}
+          style={{ background: "rgba(218, 230, 241, 0.30)" }}
         />
       </div>
 
@@ -95,14 +88,15 @@ export default function Team() {
         }
       >
         {/* CABEÇALHO */}
-
         <motion.div
           style={shouldReduceMotion ? undefined : { y: titleY }}
           className="mb-12 grid grid-cols-1 gap-6 lg:mb-16 lg:grid-cols-[1fr_0.55fr] lg:items-end lg:gap-12"
         >
           <div>
             <motion.h2
-              initial={shouldReduceMotion ? false : { opacity: 0, y: 22 }}
+              initial={
+                shouldReduceMotion ? false : { opacity: 0, y: 22 }
+              }
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
               transition={{
@@ -128,7 +122,9 @@ export default function Team() {
           </div>
 
           <motion.div
-            initial={shouldReduceMotion ? false : { opacity: 0, y: 18 }}
+            initial={
+              shouldReduceMotion ? false : { opacity: 0, y: 18 }
+            }
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{
@@ -155,12 +151,12 @@ export default function Team() {
         </motion.div>
 
         {/* COLABORADORES */}
-
         <div className="grid grid-cols-1 gap-10 md:grid-cols-2 md:gap-6 lg:gap-8">
-          {/* LUCAS */}
-
+          {/* LUCAS MORAES */}
           <motion.article
-            initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
+            initial={
+              shouldReduceMotion ? false : { opacity: 0, y: 30 }
+            }
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{
@@ -244,10 +240,11 @@ export default function Team() {
             </p>
           </motion.article>
 
-          {/* GUSTAVO */}
-
+          {/* GUSTAVO VICTOR */}
           <motion.article
-            initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }}
+            initial={
+              shouldReduceMotion ? false : { opacity: 0, y: 30 }
+            }
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{
@@ -266,29 +263,25 @@ export default function Team() {
                 border: `1px solid ${COLORS.line}`,
               }}
             >
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span
-                  className="select-none text-[clamp(6rem,13vw,11rem)] leading-none tracking-[-0.1em] transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-                  style={{
-                    color: "rgba(43, 83, 125, 0.24)",
-                    fontFamily:
-                      '"Standard Black", "Arial Black", Impact, sans-serif',
-                    fontWeight: 900,
-                  }}
-                >
-                  G
-                </span>
-              </div>
+              <img
+                src="/images/gustavo.webp"
+                alt="Gustavo Victor, desenvolvedor da Eleva Studio"
+                loading="lazy"
+                decoding="async"
+                className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.025]"
+              />
+
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#10182B]/15 via-transparent to-transparent" />
 
               <div className="absolute left-4 top-4 sm:left-5 sm:top-5">
                 <span
                   className="inline-block text-[10px] font-semibold uppercase tracking-[0.18em]"
                   style={{
-                    color: COLORS.text,
-                    textShadow: "0 1px 8px rgba(255,255,255,0.45)",
+                    color: "#FFFFFF",
+                    textShadow: "0 1px 10px rgba(0,0,0,0.55)",
                   }}
                 >
-                  Colaboração em desenvolvimento
+                  Desenvolvimento
                 </span>
               </div>
             </div>
@@ -306,14 +299,14 @@ export default function Team() {
                     fontWeight: 900,
                   }}
                 >
-                  Gustavo
+                  Gustavo Victor
                 </h3>
 
                 <p
                   className="mt-2 text-sm"
                   style={{ color: COLORS.accent }}
                 >
-                  Perspectiva criativa
+                  Desenvolvimento e criatividade
                 </p>
               </div>
 
@@ -321,7 +314,7 @@ export default function Team() {
                 className="mt-1 text-[10px] uppercase tracking-[0.16em] sm:text-right"
                 style={{ color: COLORS.muted }}
               >
-                Em construção
+                Eleva Studio
               </span>
             </div>
 
@@ -329,17 +322,20 @@ export default function Team() {
               className="mt-4 max-w-lg text-sm leading-6"
               style={{ color: COLORS.muted }}
             >
-              Uma perspectiva complementar que queremos aproximar dos
-              próximos projetos da Eleva, ampliando as possibilidades
-              criativas e a troca de ideias ao longo do processo.
+              Com foco em desenvolvimento e soluções criativas, Gustavo
+              contribui para transformar ideias em experiências digitais
+              funcionais, bem estruturadas e visualmente consistentes.
+              Seu olhar técnico e criativo complementa a construção
+              de projetos pensados para gerar resultados.
             </p>
           </motion.article>
         </div>
 
         {/* FECHAMENTO */}
-
         <motion.div
-          initial={shouldReduceMotion ? false : { opacity: 0, y: 18 }}
+          initial={
+            shouldReduceMotion ? false : { opacity: 0, y: 18 }
+          }
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.35 }}
           transition={{
@@ -353,8 +349,8 @@ export default function Team() {
             className="max-w-xl text-sm leading-6 sm:text-base"
             style={{ color: COLORS.muted }}
           >
-            Uma boa ideia só ganha força quando estratégia, execução e
-            intenção caminham na mesma direção.
+            Uma boa ideia só ganha força quando estratégia, execução
+            e intenção caminham na mesma direção.
           </p>
 
           <span
