@@ -22,7 +22,7 @@ function ContactLaptopModel({
   const { scene } = useGLTF("/models/desktop.glb");
   const screenTexture = useTexture("/images/contact/faq-screen.png");
 
-  const { model, materials } = useMemo(() => {
+  const { model, materials, center, size } = useMemo(() => {
     const clonedModel = scene.clone(true);
     const clonedMaterials: THREE.Material[] = [];
 
@@ -34,12 +34,9 @@ function ContactLaptopModel({
 
       const cloneMaterial = (material: THREE.Material) => {
         const clonedMaterial = material.clone();
-
         clonedMaterial.transparent = false;
         clonedMaterial.opacity = 1;
-
         clonedMaterials.push(clonedMaterial);
-
         return clonedMaterial;
       };
 
@@ -50,24 +47,18 @@ function ContactLaptopModel({
       }
     });
 
+    const box = new THREE.Box3().setFromObject(clonedModel);
+
     return {
       model: clonedModel,
       materials: clonedMaterials,
-    };
-  }, [scene]);
-
-  const { center, size } = useMemo(() => {
-    const box = new THREE.Box3().setFromObject(model);
-
-    return {
       center: box.getCenter(new THREE.Vector3()),
       size: box.getSize(new THREE.Vector3()),
     };
-  }, [model]);
+  }, [scene]);
 
   const baseScale = useMemo(() => {
     const maxDimension = Math.max(size.x, size.y, size.z, 0.001);
-
     return 1.45 / maxDimension;
   }, [size]);
 
@@ -94,14 +85,14 @@ function ContactLaptopModel({
     return image.width / image.height;
   }, [screenTexture]);
 
-  const screenWidth = size.x * 0.92;
+  const screenWidth = size.x * 0.91;
   const screenHeight = screenWidth / imageAspect;
 
   const screenPosition = useMemo<[number, number, number]>(
     () => [
-      0,
-      size.y * 1.0 - center.y,
-      size.z * -0.48 - center.z,
+      0.009,
+      size.y * 1.02 - center.y,
+      size.z * -0.51 - center.z,
     ],
     [center, size]
   );
@@ -116,55 +107,83 @@ function ContactLaptopModel({
       1
     );
 
-    const easedProgress = THREE.MathUtils.smoothstep(
-      progress,
+    /*
+     * FASE 1: 0–0.48
+     * O laptop começa enorme e recua até ficar pequeno.
+     *
+     * FASE 2: 0.48–1
+     * O laptop acompanha o texto horizontalmente.
+     */
+    const shrinkProgress = THREE.MathUtils.clamp(
+      progress / 0.48,
       0,
       1
     );
 
-    // Sem fade: laptop e tela aparecem totalmente visíveis.
-    group.visible = true;
-
-    /*
-      Zoom inicial aumentado.
-      O laptop começa grande e diminui com a rolagem.
-    */
-    const initialScale = baseScale * 2.0;
-    const finalScale = baseScale * 0.72;
-
-    const currentScale = THREE.MathUtils.lerp(
-      initialScale,
-      finalScale,
-      easedProgress
+    const easedShrink = THREE.MathUtils.smoothstep(
+      shrinkProgress,
+      0,
+      1
     );
 
-    group.scale.setScalar(currentScale);
+    const followProgress = THREE.MathUtils.clamp(
+      (progress - 0.48) / 0.52,
+      0,
+      1
+    );
 
-    group.position.x = -center.x * currentScale;
+    const easedFollow = THREE.MathUtils.smoothstep(
+      followProgress,
+      0,
+      1
+    );
+
+    const initialScale = baseScale * 4.0;
+    const finalScale = baseScale * 0.72;
+
+    const scale = THREE.MathUtils.lerp(
+      initialScale,
+      finalScale,
+      easedShrink
+    );
+
+    group.scale.setScalar(scale);
+
+    // Centraliza o modelo durante a primeira fase.
+    // Na segunda, acompanha a passagem da frase.
+    const horizontalTravel = THREE.MathUtils.lerp(
+      0,
+      1.45,
+      easedFollow
+    );
+
+    group.position.x =
+      -center.x * scale + horizontalTravel;
 
     group.position.y =
-      -center.y * currentScale +
-      THREE.MathUtils.lerp(0.08, 0, easedProgress);
+      -center.y * scale +
+      THREE.MathUtils.lerp(0.08, 0, easedShrink);
 
     group.position.z = THREE.MathUtils.lerp(
       0,
       -0.2,
-      easedProgress
+      easedShrink
     );
 
     group.rotation.x = THREE.MathUtils.lerp(
       -0.06,
       0,
-      easedProgress
+      easedShrink
     );
 
     group.rotation.y = THREE.MathUtils.lerp(
       -0.1,
-      0,
-      easedProgress
+      THREE.MathUtils.lerp(0, 0.08, easedFollow),
+      easedShrink
     );
 
     group.rotation.z = 0;
+    group.visible = true;
 
     materials.forEach((material) => {
       material.transparent = false;
@@ -177,6 +196,7 @@ function ContactLaptopModel({
     <group ref={groupRef}>
       <primitive object={model} />
 
+      {/* Tela original do FAQ */}
       <mesh position={screenPosition} renderOrder={10}>
         <planeGeometry args={[screenWidth, screenHeight]} />
 
@@ -203,7 +223,10 @@ export default function ContactLaptop({
   progressRef,
 }: ContactLaptopProps) {
   return (
-    <div className="relative h-full w-full">
+    <div
+      className="absolute inset-0 h-full w-full"
+      style={{ background: "transparent" }}
+    >
       <Canvas
         camera={{
           position: [0, 0.15, 4.5],
@@ -216,7 +239,6 @@ export default function ContactLaptop({
           alpha: true,
           antialias: true,
           powerPreference: "high-performance",
-          premultipliedAlpha: false,
           outputColorSpace: THREE.SRGBColorSpace,
         }}
         onCreated={({ gl, scene }) => {
@@ -224,6 +246,10 @@ export default function ContactLaptop({
           scene.background = null;
         }}
         style={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
           background: "transparent",
           display: "block",
         }}
