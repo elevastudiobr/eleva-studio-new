@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import {
   AnimatePresence,
@@ -11,6 +12,8 @@ import {
   useTransform,
 } from "framer-motion";
 import { Minus, Plus } from "lucide-react";
+
+import FinalCTA from "@/components/sections/FinalCTA";
 
 const ContactLaptop = dynamic(
   () => import("@/components/sections/ContactLaptop"),
@@ -25,6 +28,8 @@ const COLORS = {
   faqBackground: "#e7e8fa",
   black: "#050505",
 };
+
+const CTA_TEXT = "VAMOS ELEVAR O POTENCIAL DA SUA MARCA?";
 
 const FAQ_ITEMS = [
   {
@@ -76,11 +81,44 @@ function clamp(value: number, min = 0, max = 1) {
 export default function FAQ() {
   const sectionRef = useRef<HTMLElement>(null);
   const runwayRef = useRef<HTMLDivElement>(null);
+  const ctaTextRef = useRef<HTMLHeadingElement>(null);
   const laptopProgressRef = useRef(0);
 
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
+  const [textTravel, setTextTravel] = useState({
+    start: 1920,
+    end: -4000,
+  });
+
   const reducedMotion = useReducedMotion();
+
+  // Mede a largura real do texto para calcular o percurso completo.
+  useEffect(() => {
+    const updateTextTravel = () => {
+      const textWidth = ctaTextRef.current?.scrollWidth ?? 4000;
+
+      setTextTravel({
+        start: window.innerWidth,
+        end: -textWidth,
+      });
+    };
+
+    updateTextTravel();
+
+    const observer = new ResizeObserver(updateTextTravel);
+
+    if (ctaTextRef.current) {
+      observer.observe(ctaTextRef.current);
+    }
+
+    window.addEventListener("resize", updateTextTravel);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", updateTextTravel);
+    };
+  }, []);
 
   const { scrollYProgress: closingProgress } = useScroll({
     target: runwayRef,
@@ -91,11 +129,7 @@ export default function FAQ() {
     laptopProgressRef.current = clamp(latest);
   });
 
-  /*
-   * IMPORTANTE:
-   * A cor muda na própria seção da FAQ.
-   * Não há um painel de fundo independente na transição.
-   */
+  // Transição original do fundo preservada.
   const sectionBackground = useTransform(
     closingProgress,
     [0, 0.18, 0.36, 0.48, 1],
@@ -109,25 +143,38 @@ export default function FAQ() {
   );
 
   /*
-   * O texto só entra depois que o fundo chega ao preto.
-   * Ele atravessa a tela da esquerda para a direita.
+   * A frase atravessa a tela por inteiro.
+   *
+   * 0–8%: permanece fora da tela à direita.
+   * 8–86%: atravessa a tela continuamente.
+   * 86–89%: termina a saída pela esquerda.
+   *
+   * A CTA só começa a aparecer depois desse percurso.
    */
   const textX = useTransform(
     closingProgress,
-    [0, 0.48, 0.54, 1],
-    ["-125vw", "-125vw", "-100vw", "110vw"]
+    [0, 0.08, 0.86, 0.89, 1],
+    [
+      textTravel.start,
+      textTravel.start,
+      textTravel.end,
+      textTravel.end,
+      textTravel.end,
+    ]
   );
 
+  // Mantém o texto totalmente visível durante quase todo o percurso.
   const textOpacity = useTransform(
     closingProgress,
-    [0, 0.47, 0.53, 0.94, 1],
-    [0, 0, 1, 1, 0]
+    [0, 0.04, 0.07, 0.84, 0.89, 1],
+    [0, 0, 1, 1, 0, 0]
   );
 
+  // Variação discreta de escala, sem enfraquecer a leitura.
   const textScale = useTransform(
     closingProgress,
-    [0.48, 0.72, 1],
-    [0.94, 1, 0.96]
+    [0.07, 0.45, 0.84, 0.89],
+    [0.97, 1, 1, 0.99]
   );
 
   return (
@@ -160,7 +207,10 @@ export default function FAQ() {
               initial={reducedMotion ? false : { opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              transition={{
+                duration: 0.7,
+                ease: [0.22, 1, 0.36, 1],
+              }}
             >
               Tudo o que você precisa saber.
             </motion.h2>
@@ -204,9 +254,7 @@ export default function FAQ() {
                   <button
                     type="button"
                     aria-expanded={isOpen}
-                    onClick={() =>
-                      setOpenIndex(isOpen ? null : index)
-                    }
+                    onClick={() => setOpenIndex(isOpen ? null : index)}
                     className="flex w-full items-center justify-between gap-5 py-6 text-left sm:py-7"
                   >
                     <span className="text-base font-semibold leading-snug tracking-[-0.025em] sm:text-lg">
@@ -253,12 +301,7 @@ export default function FAQ() {
         </div>
       </div>
 
-      {/*
-       * TRANSIÇÃO:
-       * Esta área cria apenas o espaço de scroll.
-       * O sticky e o Canvas não têm background próprio.
-       * O fundo que o usuário vê é o da própria seção da FAQ.
-       */}
+      {/* TRANSIÇÃO CINEMATOGRÁFICA */}
       <div
         ref={runwayRef}
         data-faq-laptop-runway
@@ -266,22 +309,25 @@ export default function FAQ() {
         aria-label="Transição visual da Eleva Studio"
       >
         <div className="sticky top-0 z-20 h-[100svh] w-full overflow-hidden">
-          {/* LAPTOP 3D COM FUNDO TRANSPARENTE */}
+          {/* LAPTOP 3D */}
           <div className="pointer-events-none absolute inset-0 z-10">
             <ContactLaptop progressRef={laptopProgressRef} />
           </div>
 
           {/* TEXTO EM MOVIMENTO */}
           <motion.div
-            className="pointer-events-none absolute inset-0 z-20 flex items-center overflow-visible"
+            className="pointer-events-none absolute left-0 top-0 z-20 flex h-full w-max items-center overflow-visible"
             style={{
               x: reducedMotion ? 0 : textX,
-              opacity: reducedMotion ? textOpacity : textOpacity,
+              opacity: reducedMotion ? 1 : textOpacity,
               scale: reducedMotion ? 1 : textScale,
             }}
           >
-            <h2 className="whitespace-nowrap text-[clamp(3.5rem,11.5vw,12rem)] font-black uppercase leading-[0.82] tracking-[-0.075em] text-white">
-              SUA MARCA MERECE SER INESQUECÍVEL.
+            <h2
+              ref={ctaTextRef}
+              className="whitespace-nowrap text-[clamp(4.5rem,15vw,17rem)] font-black uppercase leading-[0.8] tracking-[-0.085em] text-white"
+            >
+              {CTA_TEXT}
             </h2>
           </motion.div>
 
@@ -291,6 +337,9 @@ export default function FAQ() {
               Eleva Studio — Experiências digitais
             </p>
           </div>
+
+          {/* CTA FINAL */}
+          <FinalCTA progress={closingProgress} />
         </div>
       </div>
     </motion.section>

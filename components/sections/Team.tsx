@@ -265,7 +265,7 @@ export default function Team() {
             >
               <img
                 src="/images/gustavo.webp"
-                alt="Gustavo Victor, desenvolvedor da Eleva Studio"
+                alt="Gustavo Vitor, desenvolvedor da Eleva Studio"
                 loading="lazy"
                 decoding="async"
                 className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.025]"
@@ -299,7 +299,7 @@ export default function Team() {
                     fontWeight: 900,
                   }}
                 >
-                  Gustavo Victor
+                  Gustavo Vitor
                 </h3>
 
                 <p

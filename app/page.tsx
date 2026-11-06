@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -20,7 +21,7 @@ export default function Home() {
     <>
       <Navbar />
 
-      <main>
+      <main id="inicio">
         <Hero onProgressChange={setTransitionProgress} />
 
         <Projects transitionProgress={transitionProgress} />

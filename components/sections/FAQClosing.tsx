@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   motion,
   useMotionValueEvent,
@@ -10,31 +10,58 @@ import {
 } from "framer-motion";
 import ContactLaptop from "@/components/sections/ContactLaptop";
 
+const CTA_TEXT = "VAMOS ELEVAR O POTENCIAL DA SUA MARCA?";
+
 export default function FAQClosing() {
   const runwayRef = useRef<HTMLDivElement>(null);
+  const ctaTextRef = useRef<HTMLHeadingElement>(null);
   const laptopProgressRef = useRef(0);
+
+  const [textTravel, setTextTravel] = useState({
+    start: 1920,
+    end: -4000,
+  });
+
+  useEffect(() => {
+    const updateTextTravel = () => {
+      const textWidth = ctaTextRef.current?.scrollWidth ?? 4000;
+
+      setTextTravel({
+        start: window.innerWidth,
+        end: -textWidth,
+      });
+    };
+
+    updateTextTravel();
+    window.addEventListener("resize", updateTextTravel);
+
+    return () => {
+      window.removeEventListener("resize", updateTextTravel);
+    };
+  }, []);
 
   const { scrollYProgress } = useScroll({
     target: runwayRef,
     offset: ["start start", "end end"],
   });
 
+  // Começa à direita e atravessa toda a tela para a esquerda.
   const textX = useTransform(
     scrollYProgress,
     [0, 1],
-    ["100vw", "-125vw"]
+    [textTravel.start, textTravel.end]
   );
 
   const textOpacity = useTransform(
     scrollYProgress,
-    [0, 0.08, 0.96, 1],
-    [0, 1, 1, 0.8]
+    [0, 0.03, 0.94, 1],
+    [0, 1, 1, 0]
   );
 
   const textScale = useTransform(
     scrollYProgress,
     [0, 0.2, 1],
-    [0.92, 1, 0.92]
+    [0.96, 1, 0.98]
   );
 
   useMotionValueEvent(scrollYProgress, "change", (progress) => {
@@ -48,32 +75,29 @@ export default function FAQClosing() {
       className="relative h-[320vh] w-full bg-[#050505]"
     >
       <div className="sticky top-0 isolate h-[100svh] w-full overflow-hidden bg-[#050505]">
-        {/* Fundo sem imagens ou painéis brancos */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 z-0 bg-[#050505]"
-        />
-
-        {/* Laptop atrás do texto */}
+        {/* LAPTOP ATRÁS DO TEXTO */}
         <div className="pointer-events-none absolute inset-0 z-10">
           <ContactLaptop progressRef={laptopProgressRef} />
         </div>
 
-        {/* Texto controlado pelo scroll */}
+        {/* CHAMADA PARA CONTATO */}
         <motion.div
-          className="pointer-events-none absolute inset-0 z-20 flex items-center overflow-visible"
+          className="pointer-events-none absolute left-0 top-0 z-20 flex h-full w-max items-center overflow-visible"
           style={{
             x: textX,
             opacity: textOpacity,
             scale: textScale,
           }}
         >
-          <h2 className="whitespace-nowrap font-black uppercase leading-[0.82] tracking-[-0.075em] text-white text-[clamp(4rem,11.5vw,12rem)]">
-            SUA MARCA MERECE SER INESQUECÍVEL.
+          <h2
+            ref={ctaTextRef}
+            className="whitespace-nowrap text-[clamp(4.5rem,15vw,17rem)] font-black uppercase leading-[0.8] tracking-[-0.085em] text-white"
+          >
+            {CTA_TEXT}
           </h2>
         </motion.div>
 
-        {/* Identificação discreta */}
+        {/* IDENTIFICAÇÃO DISCRETA */}
         <motion.div
           className="pointer-events-none absolute bottom-8 left-6 z-30 sm:bottom-10 sm:left-12"
           style={{ opacity: textOpacity }}
